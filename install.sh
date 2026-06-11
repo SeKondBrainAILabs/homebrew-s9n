@@ -1,7 +1,7 @@
 #!/bin/sh
 # s9n CLI installer.
 #
-#   curl -fsSL https://get.s9n.ai | sh
+#   curl -fsSL https://get.prod.apps.s9n.ai | sh
 #
 # Downloads the latest prebuilt s9n binary for your OS/arch from the public
 # release repo, verifies its SHA-256, installs it under ~/.s9n/lib, and links

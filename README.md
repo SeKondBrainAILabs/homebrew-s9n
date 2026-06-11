@@ -16,7 +16,7 @@ brew install sekondbrainailabs/s9n/s9n
 **curl (macOS / Linux)**
 
 ```sh
-curl -fsSL https://get.s9n.ai | sh
+curl -fsSL https://get.prod.apps.s9n.ai | sh
 ```
 
 **Windows (PowerShell)**
