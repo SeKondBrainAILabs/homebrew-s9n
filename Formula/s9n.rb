@@ -2,23 +2,23 @@
 class S9n < Formula
   desc "Connect coding agents to SeKondBrain (MCP) via browser sign-in"
   homepage "https://www.sekondbrain.ai"
-  version "0.1.2"
+  version "0.1.3"
   license "MIT"
 
   # Single universal2 build serves both Apple Silicon and Intel.
   on_macos do
-    url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/v0.1.2/s9n-macos-universal.tar.gz"
-    sha256 "dced34ad49b4b2f929e0f28714b684b806de7ec2eadf7736e5962ef1a5fd17b2"
+    url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/v0.1.3/s9n-macos-universal.tar.gz"
+    sha256 "954b63cbe489dc4268dd2a3ba14b9ac7f2cad3dd293a3eab622207ed15de4ba7"
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/v0.1.2/s9n-linux-arm64.tar.gz"
-      sha256 "99c2161a0406241baf7fc4b6d3b2eed48c3f50564bf2089b8aa3bd8582f35fba"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/v0.1.3/s9n-linux-arm64.tar.gz"
+      sha256 "be87adff76fe92f4cbb35e6ffd01207bd48b52835296c249f3412389623e0a34"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/v0.1.2/s9n-linux-x64.tar.gz"
-      sha256 "8d4b4541e56d347e8f8fe9181d8b60222388144a8ba05ff45a643efef6bc805f"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/v0.1.3/s9n-linux-x64.tar.gz"
+      sha256 "35a52f8a2cce16a7177b6040ac0a25b95b04a2897c8fbb2d618df1a3450d0932"
     end
   end
 
