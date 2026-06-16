@@ -2,26 +2,26 @@
 class Kemory < Formula
   desc "Persistent memory CLI for AI agents — browser sign-in, MCP bridge"
   homepage "https://github.com/SeKondBrainAILabs/kemory"
-  version "0.3.10"
+  version "0.3.11"
   license "MIT"
 
   # Apple Silicon only (see release workflow: no Intel macOS runner /
   # no universal2). Intel-Mac users install via pipx.
   on_macos do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.3.10/kemory-macos-arm64.tar.gz"
-      sha256 "c4edc0b3e473a95a62af01f4d671855f49ad6648ee1d81680193fcd2694d102f"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.3.11/kemory-macos-arm64.tar.gz"
+      sha256 "e7952a79364d0ce72e5c01073ac579a1b1d8146906900cc6594658ddc052b139"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.3.10/kemory-linux-arm64.tar.gz"
-      sha256 "4fb61b0b95cad18e17508c57580dde82da188e2733d566676c7eede18fd7b039"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.3.11/kemory-linux-arm64.tar.gz"
+      sha256 "ad9e81b3c4d571019e97393ce533a15d82e96ebe44b26e640c46a0455363a206"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.3.10/kemory-linux-x64.tar.gz"
-      sha256 "5ae35fcf13dbcfa3a81836b1d0e24adb5e00ebe3750579145860a8894bacbb96"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.3.11/kemory-linux-x64.tar.gz"
+      sha256 "c66ba24708973212deeaad0ba6375db3d24c1651a642ee0d23c3ed6a38c54aec"
     end
   end
 
