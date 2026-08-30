@@ -44,3 +44,37 @@ jobs:
           brew install sekondbrainailabs/s9n/${{ matrix.formula }}
           ${{ matrix.formula }} --version
           brew test ${{ matrix.formula }}
+
+  # One stable check name for branch protection to require.
+  #
+  # The `formula` job names are matrix-derived — `formula (macos-14, kemory)`,
+  # `formula (macos-15-intel, kemory)` — so requiring those directly means any
+  # edit to the matrix silently orphans the required check and the branch stops
+  # being gated at all. This job's name never changes.
+  ci-ok:
+    # `always()` is required: without it a failed dependency SKIPS this job, and
+    # branch protection counts a skipped required check as satisfied.
+    if: always()
+    needs: [shellcheck, formula]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail unless every job succeeded
+        env:
+          # Via env rather than inline `${{ }}` in the script — expressions
+          # interpolated straight into a `run:` block are executed as shell.
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "dependency results: $RESULTS"
+          # A gate handed no input is not a passing gate. Without this, dropping
+          # entries from `needs:` above would leave a green required check that
+          # checks nothing.
+          if [ -z "$RESULTS" ]; then
+            echo "::error::no dependency results — this gate is not gating anything"
+            exit 1
+          fi
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "::error::a required ci job did not succeed (saw '$result')"
+              exit 1
+            fi
+          done

@@ -1,0 +1,15 @@
+# These paths are fetched and executed on a user's machine: the formulae carry
+# the URL and checksum that `brew install` downloads and runs, and install.sh /
+# install.ps1 are piped-to-shell installers. A change here needs an owner's
+# approval even from someone who already has write access.
+#
+# Deliberately not `*`, so routine README and docs edits are not gated.
+#
+# Owners are listed individually rather than as a team, so the rule resolves
+# regardless of a team's visibility settings.
+
+/Formula/            @sachmans @karol-blaszczyk
+/install.sh          @sachmans @karol-blaszczyk
+/install.ps1         @sachmans @karol-blaszczyk
+/.github/workflows/  @sachmans @karol-blaszczyk
+/.github/CODEOWNERS  @sachmans @karol-blaszczyk
