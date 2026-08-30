@@ -2,7 +2,7 @@
 class Kemory < Formula
   desc "Persistent memory CLI for AI agents — browser sign-in, MCP bridge"
   homepage "https://github.com/SeKondBrainAILabs/kemory"
-  version "0.6.6"
+  version "0.6.7"
   license "MIT"
 
   # Separate per-arch archives (no universal2 — see the build matrix).
@@ -10,23 +10,23 @@ class Kemory < Formula
   # retires in August 2027; see the matrix comment before removing.
   on_macos do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.6/kemory-macos-arm64.tar.gz"
-      sha256 "7dcdeda2f65f03f33964d056d74c232637f4b52d6a8663c0ff9033a157cd3c55"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.7/kemory-macos-arm64.tar.gz"
+      sha256 "7d7283f779998a4737b5bf5821b7b6c38720a0ed8f1820cbbc29e5503a716c2d"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.6/kemory-macos-x64.tar.gz"
-      sha256 "889c5dc25b7fad1bad108e408e44cd7cc47811b1cd0a934e0143b3eb29d8d57a"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.7/kemory-macos-x64.tar.gz"
+      sha256 "83944bc44155298cfb8e473077adc1f1b303db97b4f685a192af170a10651a29"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.6/kemory-linux-arm64.tar.gz"
-      sha256 "c3f07faa1ebd7a60c5458679d99662d3a20fc46321169a441e8e05f395b6b418"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.7/kemory-linux-arm64.tar.gz"
+      sha256 "64445acad26c64305c2ebb33a55f3a50b118c54c211947cdadd0365d6a61c87d"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.6/kemory-linux-x64.tar.gz"
-      sha256 "2e7bcca9fa20e465961b4a2addc855ce3ebfa8302c892310b56d2b47c0d882a4"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.7/kemory-linux-x64.tar.gz"
+      sha256 "40904433216bc742289be23146a480b9135b8af1e2cb6c117050e746f851017b"
     end
   end
 
@@ -48,7 +48,9 @@ class Kemory < Formula
     # no `shell_parameter_format` — produces. `:arg` would invoke it
     # as `kemory completion --shell=zsh`; the CLI rejects that with
     # "No such option '--shell'", which aborted `brew install` for
-    # every user before this fix.
+    # every user until homebrew-s9n#1. Keep the two in step: this
+    # heredoc regenerates Formula/kemory.rb on every tag, so a fix
+    # applied only in the tap is undone by the next release.
     generate_completions_from_executable(libexec/"kemory", "completion")
   end
 
