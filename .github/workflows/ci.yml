@@ -18,20 +18,29 @@ jobs:
       - run: shellcheck -s sh install.sh
 
   formula:
-    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-14, formula: s9n }             # Apple Silicon
+          - { os: macos-14, formula: kemory }          # Apple Silicon
+          - { os: macos-15-intel, formula: kemory }    # Intel (same runner the kemory release build uses)
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: Homebrew/actions/setup-homebrew@master
       - name: Lint formula style (informational)
         continue-on-error: true
-        run: brew style Formula/s9n.rb
+        run: brew style Formula/${{ matrix.formula }}.rb
       - name: Install + test the formula end-to-end
         run: |
           # Modern Homebrew only installs formulae from a tap, so expose this
-          # checkout as the tap, then install + run its test block.
+          # checkout as the tap, then install + run its test block. `brew
+          # install` runs the formula's `install` block (completion generation
+          # included), so a bad post-install step fails the job here.
           tap="$(brew --repository)/Library/Taps/sekondbrainailabs/homebrew-s9n"
           mkdir -p "$(dirname "$tap")"
           ln -s "$GITHUB_WORKSPACE" "$tap"
-          brew install sekondbrainailabs/s9n/s9n
-          s9n --version
-          brew test s9n
+          brew install sekondbrainailabs/s9n/${{ matrix.formula }}
+          ${{ matrix.formula }} --version
+          brew test ${{ matrix.formula }}
