@@ -1,7 +1,7 @@
 #!/bin/sh
 # s9n CLI installer.
 #
-#   curl -fsSL https://get.prod.apps.s9n.ai | sh
+#   curl -fsSL https://install.sekondbrain.ai | sh
 #
 # Downloads the latest prebuilt s9n binary for your OS/arch from the public
 # release repo, verifies its SHA-256, installs it under ~/.s9n/lib, and links
@@ -41,17 +41,24 @@ else
 fi
 
 # --- resolve version ---------------------------------------------------------
+# The tap holds two products in ONE release stream: s9n tags are `vX.Y.Z`, the
+# kemory CLI's are `cli-vX.Y.Z`. /releases/latest returns whichever shipped
+# last, which is usually a kemory tag carrying no s9n asset — asking it for the
+# version made every install 404 on the download. Take the newest tag that is
+# actually an s9n release instead. The exact-match pattern also skips
+# prereleases (`v0.2.0-rc1`), which /releases (unlike /releases/latest) lists.
 version="${S9N_VERSION:-}"
 if [ -z "$version" ]; then
-  api="https://api.github.com/repos/$REPO/releases/latest"
-  if have curl; then
-    version=$(curl -fsSL "$api" | grep '"tag_name"' | head -1 | sed -E 's/.*"tag_name" *: *"([^"]+)".*/\1/')
-  elif have wget; then
-    version=$(wget -qO- "$api" | grep '"tag_name"' | head -1 | sed -E 's/.*"tag_name" *: *"([^"]+)".*/\1/')
-  else
-    err "need curl or wget."
+  api="https://api.github.com/repos/$REPO/releases?per_page=100"
+  if have curl;   then releases=$(curl -fsSL "$api")
+  elif have wget; then releases=$(wget -qO- "$api")
+  else err "need curl or wget."
   fi
-  [ -n "$version" ] || err "could not determine latest version (no releases yet?). Set S9N_VERSION to pin one."
+  version=$(printf '%s' "$releases" \
+    | sed -n 's/.*"tag_name" *: *"\([^"]*\)".*/\1/p' \
+    | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+    | head -1)
+  [ -n "$version" ] || err "could not find an s9n release (its tags look like v0.1.3). Set S9N_VERSION to pin one."
 fi
 
 archive="s9n-${target}.tar.gz"

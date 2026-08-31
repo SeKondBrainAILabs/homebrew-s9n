@@ -15,12 +15,16 @@ $Target = "windows-x64"
 $Archive = "s9n-$Target.zip"
 
 # --- resolve version ---------------------------------------------------------
+# One release stream, two products (see install.sh): s9n tags are vX.Y.Z,
+# kemory's are cli-vX.Y.Z, and /releases/latest returns whichever shipped last
+# — usually kemory, whose releases carry no s9n asset. Take the newest tag that
+# is actually an s9n release. The exact-match pattern also skips prereleases.
 $version = $env:S9N_VERSION
 if (-not $version) {
-  $rel = Invoke-RestMethod -UseBasicParsing "https://api.github.com/repos/$Repo/releases/latest"
-  $version = $rel.tag_name
+  $rels = Invoke-RestMethod -UseBasicParsing "https://api.github.com/repos/$Repo/releases?per_page=100"
+  $version = ($rels | Where-Object { $_.tag_name -match '^v\d+\.\d+\.\d+$' } | Select-Object -First 1).tag_name
 }
-if (-not $version) { throw "Could not determine latest version (no releases yet?). Set `$env:S9N_VERSION to pin one." }
+if (-not $version) { throw "Could not find an s9n release (its tags look like v0.1.3). Set `$env:S9N_VERSION to pin one." }
 
 $base = "https://github.com/$Repo/releases/download/$version"
 Write-Host "Installing s9n $version ($Target)..."
