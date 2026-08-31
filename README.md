@@ -42,13 +42,13 @@ brew install sekondbrainailabs/s9n/s9n
 **curl (macOS / Linux)**
 
 ```sh
-curl -fsSL https://get.prod.apps.s9n.ai | sh
+curl -fsSL https://install.sekondbrain.ai | sh
 ```
 
 **Windows (PowerShell)**
 
 ```powershell
-irm https://raw.githubusercontent.com/SeKondBrainAILabs/homebrew-s9n/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/SeKondBrainAILabs/homebrew-s9n/refs/heads/main/install.ps1 | iex
 ```
 
 (Or download `s9n-windows-x64.zip` from the
