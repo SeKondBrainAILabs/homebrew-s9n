@@ -2,7 +2,7 @@
 class Kemory < Formula
   desc "Persistent memory CLI for AI agents — browser sign-in, MCP bridge"
   homepage "https://github.com/SeKondBrainAILabs/kemory"
-  version "0.6.7"
+  version "0.6.8"
   license "MIT"
 
   # Separate per-arch archives (no universal2 — see the build matrix).
@@ -10,23 +10,23 @@ class Kemory < Formula
   # retires in August 2027; see the matrix comment before removing.
   on_macos do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.7/kemory-macos-arm64.tar.gz"
-      sha256 "7d7283f779998a4737b5bf5821b7b6c38720a0ed8f1820cbbc29e5503a716c2d"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.8/kemory-macos-arm64.tar.gz"
+      sha256 "4dc28cd0551da7a9959b8e21f8e586485b7f30181cb67a541558d933c4c85637"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.7/kemory-macos-x64.tar.gz"
-      sha256 "83944bc44155298cfb8e473077adc1f1b303db97b4f685a192af170a10651a29"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.8/kemory-macos-x64.tar.gz"
+      sha256 "b86c01e8c6226d0d6b08bebfa6d49b414979ae045dfbee9f1900eefb45a4ed0b"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.7/kemory-linux-arm64.tar.gz"
-      sha256 "64445acad26c64305c2ebb33a55f3a50b118c54c211947cdadd0365d6a61c87d"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.8/kemory-linux-arm64.tar.gz"
+      sha256 "9a1f2f38aae267e3808db4ad58349c350a283655ba8c7a7f4a1d562c01edd751"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.7/kemory-linux-x64.tar.gz"
-      sha256 "40904433216bc742289be23146a480b9135b8af1e2cb6c117050e746f851017b"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.8/kemory-linux-x64.tar.gz"
+      sha256 "e741895aa3cba011e95e1fc66d77188d6023f10d37fa6b2f3c39a5d957844bfe"
     end
   end
 
@@ -56,14 +56,11 @@ class Kemory < Formula
 
   test do
     assert_match "version", shell_output("#{bin}/kemory --version")
-    # Proves the [tui] extra survived the freeze: the browse
-    # command only exists when kemory_cli.tui imports, which is
-    # what breaks in a binary missing textual .tcss data files.
-    # No credentials in the brew sandbox, so this exits non-zero
-    # either way — what differs is WHICH failure. "log in first"
-    # means the tui import succeeded; the install hint means the
-    # extra did not survive the freeze.
-    refute_match "optional TUI dependency",
-                 shell_output("#{bin}/kemory browse 2>&1", 3)
+    # browse is now a signpost to the dashboard, so it needs no
+    # credentials and must exit 0 while naming where to go.
+    # (No backticks here: shellcheck reads this run: block as shell,
+    # and SC2006 flags them as legacy command substitution.)
+    assert_match "deprecated",
+                 shell_output("#{bin}/kemory browse 2>&1")
   end
 end
