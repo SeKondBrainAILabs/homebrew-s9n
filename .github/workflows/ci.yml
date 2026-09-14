@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update && sudo apt-get install -y shellcheck
-      - run: shellcheck -s sh install.sh
+      - run: shellcheck -s sh install.sh install-kemory.sh
 
   formula:
     strategy:
@@ -54,45 +54,54 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-14]
+        product:
+          - { script: install.sh, bin: s9n }
+          - { script: install-kemory.sh, bin: kemory }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install s9n from this checkout's install.sh
+      - name: Install from this checkout's ${{ matrix.product.script }}
         # Without a token the script's version lookup hits the unauthenticated
         # GitHub API limit (60/hour per IP) and curl exits 56 on the 403. The
         # macOS runners share egress addresses and hit it routinely.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sh ./install.sh
+        run: sh ./${{ matrix.product.script }}
       - name: The installed launcher runs
         run: |
-          "$HOME/.local/bin/s9n" --version
+          "$HOME/.local/bin/${{ matrix.product.bin }}" --version
 
   installer-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        product:
+          - { script: install.ps1, dir: s9n, exe: s9n.exe }
+          - { script: install-kemory.ps1, dir: kemory, exe: kemory.exe }
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Lint install.ps1
+      - name: Lint ${{ matrix.product.script }}
         shell: pwsh
         run: |
           Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -SkipPublisherCheck
           # Errors fail the job; warnings are printed but tolerated, matching how
           # much of PSScriptAnalyzer's default rule set is stylistic.
-          $found = Invoke-ScriptAnalyzer -Path ./install.ps1 -Severity Error,Warning
+          $found = Invoke-ScriptAnalyzer -Path ./${{ matrix.product.script }} -Severity Error,Warning
           $found | Format-Table -AutoSize | Out-String | Write-Host
           if ($found | Where-Object { $_.Severity -eq 'Error' }) {
-            Write-Host "::error::PSScriptAnalyzer reported errors in install.ps1"
+            Write-Host "::error::PSScriptAnalyzer reported errors in ${{ matrix.product.script }}"
             exit 1
           }
-      - name: Install s9n from this checkout's install.ps1
+      - name: Install from this checkout's ${{ matrix.product.script }}
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./install.ps1
+        run: ./${{ matrix.product.script }}
       - name: The installed exe runs
         shell: pwsh
         run: |
-          & "$env:LOCALAPPDATA\Programs\s9n\current\s9n.exe" --version
+          & "$env:LOCALAPPDATA\Programs\${{ matrix.product.dir }}\current\${{ matrix.product.exe }}" --version
 
   # One stable check name for branch protection to require.
   #
