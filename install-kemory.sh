@@ -1,22 +1,28 @@
 #!/bin/sh
-# s9n CLI installer.
+# kemory CLI installer.
 #
-#   curl -fsSL https://install.sekondbrain.ai | sh
+#   curl -fsSL https://install.sekondbrain.ai/kemory | sh
 #
-# Downloads the latest prebuilt s9n binary for your OS/arch from the public
-# release repo, verifies its SHA-256, installs it under ~/.s9n/lib, and links
+# Downloads the latest prebuilt kemory binary for your OS/arch from the public
+# release repo, verifies its SHA-256, installs it under ~/.kemory/lib, and links
 # the launcher into a bin dir on your PATH. No Python required.
 #
+# This is the sibling of install.sh (the s9n installer). Two deliberate
+# differences: it resolves `cli-vX.Y.Z` tags rather than `vX.Y.Z`, and it picks a
+# per-arch macOS asset because kemory has no universal2 build — its
+# `pydantic-core` dependency ships single-arch wheels, so PyInstaller cannot
+# fuse a fat binary.
+#
 # Env overrides:
-#   S9N_VERSION   pin a version (e.g. v0.2.0); default: latest release
-#   S9N_BIN_DIR   where to symlink the launcher (default: ~/.local/bin)
-#   GITHUB_TOKEN  optional; only used to raise the GitHub API rate limit when
-#                 resolving the latest version. Never sent to the download.
+#   KEMORY_VERSION   pin a version (e.g. cli-v0.6.8); default: latest release
+#   KEMORY_BIN_DIR   where to symlink the launcher (default: ~/.local/bin)
+#   GITHUB_TOKEN     optional; only used to raise the GitHub API rate limit when
+#                    resolving the latest version. Never sent to the download.
 set -eu
 
 REPO="SeKondBrainAILabs/homebrew-s9n"
-BIN_DIR="${S9N_BIN_DIR:-$HOME/.local/bin}"
-LIB_ROOT="$HOME/.s9n/lib"
+BIN_DIR="${KEMORY_BIN_DIR:-$HOME/.local/bin}"
+LIB_ROOT="$HOME/.kemory/lib"
 
 say()  { printf '%s\n' "$*"; }
 err()  { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -30,45 +36,39 @@ main() {
     Darwin) os_tag="macos" ;;
     Linux)  os_tag="linux" ;;
     *) err "unsupported OS '$os'. On Windows, run this in PowerShell instead:
-    irm https://raw.githubusercontent.com/$REPO/refs/heads/main/install.ps1 | iex" ;;
+    irm https://raw.githubusercontent.com/$REPO/refs/heads/main/install-kemory.ps1 | iex" ;;
   esac
   case "$arch" in
     arm64|aarch64) arch_tag="arm64" ;;
     x86_64|amd64)  arch_tag="x64" ;;
     *) err "unsupported architecture '$arch'." ;;
   esac
-  # macOS ships a single universal2 binary (Apple Silicon + Intel).
-  if [ "$os_tag" = "macos" ]; then
-    target="macos-universal"
-  else
-    target="${os_tag}-${arch_tag}"
-  fi
+  target="${os_tag}-${arch_tag}"
 
   # --- resolve version -------------------------------------------------------
-  # The tap holds two products in ONE release stream: s9n tags are `vX.Y.Z`, the
-  # kemory CLI's are `cli-vX.Y.Z`. /releases/latest returns whichever shipped
-  # last, which is usually a kemory tag carrying no s9n asset — asking it for the
-  # version made every install 404 on the download. Take the newest tag that is
-  # actually an s9n release instead. The exact-match pattern also skips
-  # prereleases (`v0.2.0-rc1`), which /releases (unlike /releases/latest) lists.
-  version="${S9N_VERSION:-}"
+  # The tap holds two products in ONE release stream: kemory tags are
+  # `cli-vX.Y.Z`, s9n's are `vX.Y.Z`. /releases/latest returns whichever shipped
+  # last, so it cannot be trusted to carry a kemory asset — take the newest tag
+  # that is actually a kemory release. The exact-match pattern also skips
+  # prereleases (`cli-v0.6.8-rc1`), which /releases lists.
+  version="${KEMORY_VERSION:-}"
   if [ -z "$version" ]; then
     api="https://api.github.com/repos/$REPO/releases?per_page=100"
     have curl || have wget || err "need curl or wget."
     releases=$(api_get "$api") || err "could not reach the GitHub API.
     A 403 here is the unauthenticated rate limit — 60 requests/hour per IP,
     which CI runners and anyone behind a shared NAT exhaust routinely. Either
-    set GITHUB_TOKEN, or skip the lookup entirely by pinning S9N_VERSION."
+    set GITHUB_TOKEN, or skip the lookup entirely by pinning KEMORY_VERSION."
     version=$(printf '%s' "$releases" \
       | sed -n 's/.*"tag_name" *: *"\([^"]*\)".*/\1/p' \
-      | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+      | grep -E '^cli-v[0-9]+\.[0-9]+\.[0-9]+$' \
       | head -1)
-    [ -n "$version" ] || err "could not find an s9n release (its tags look like v0.1.3). Set S9N_VERSION to pin one."
+    [ -n "$version" ] || err "could not find a kemory release (its tags look like cli-v0.6.8). Set KEMORY_VERSION to pin one."
   fi
 
-  archive="s9n-${target}.tar.gz"
+  archive="kemory-${target}.tar.gz"
   base="https://github.com/$REPO/releases/download/$version"
-  say "Installing s9n $version ($target)…"
+  say "Installing kemory $version ($target)…"
 
   # --- download + verify -----------------------------------------------------
   tmp=$(mktemp -d)
@@ -90,10 +90,10 @@ main() {
   rm -rf "$dest"
   mkdir -p "$dest"
   tar -xzf "$tmp/$archive" -C "$dest"
-  [ -x "$dest/s9n" ] || chmod +x "$dest/s9n" 2>/dev/null || true
+  [ -x "$dest/kemory" ] || chmod +x "$dest/kemory" 2>/dev/null || true
 
   mkdir -p "$BIN_DIR"
-  ln -sf "$dest/s9n" "$BIN_DIR/s9n"
+  ln -sf "$dest/kemory" "$BIN_DIR/kemory"
   # point a stable "current" symlink at this version too
   ln -sfn "$dest" "$LIB_ROOT/current"
 
@@ -102,7 +102,7 @@ main() {
     xattr -dr com.apple.quarantine "$dest" 2>/dev/null || true
   fi
 
-  say "✓ Installed s9n → $BIN_DIR/s9n"
+  say "✓ Installed kemory → $BIN_DIR/kemory"
 
   # --- PATH hint -------------------------------------------------------------
   case ":$PATH:" in
@@ -116,8 +116,9 @@ main() {
 
   say ""
   say "Next:"
-  say "    s9n login        # sign in (browser)"
-  say "    s9n install      # wire it into Claude Code, then /mcp"
+  say "    kemory login     # sign in (browser)"
+  say "    kemory connect   # register the MCP server in your agent"
+  say "    kemory doctor    # check the connection"
 }
 
 fetch() {
@@ -141,9 +142,6 @@ api_get() {
   fi
 }
 
-# Everything above is a definition; this is the only line that acts. The script
-# is piped straight into `sh`, so a connection that drops mid-transfer would
-# otherwise run whatever prefix arrived — downloading without installing, or
-# unpacking into a half-made directory. sh cannot reach this call until it has
-# parsed the whole file, so a truncated body does nothing at all.
+# Everything above is a definition; this is the only line that acts. See the
+# same note in install.sh — a truncated pipe must not execute a partial script.
 main "$@"
