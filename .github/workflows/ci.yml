@@ -45,6 +45,48 @@ jobs:
           ${{ matrix.formula }} --version
           brew test ${{ matrix.formula }}
 
+  # The installer scripts are fetched and executed on user machines, and until
+  # now nothing ran them — shellcheck reads install.sh without executing it, and
+  # install.ps1 had no coverage at all. These jobs install from the scripts in
+  # this checkout and assert the binary they produce actually runs.
+  installer-posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install s9n from this checkout's install.sh
+        run: sh ./install.sh
+      - name: The installed launcher runs
+        run: |
+          "$HOME/.local/bin/s9n" --version
+
+  installer-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint install.ps1
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -SkipPublisherCheck
+          # Errors fail the job; warnings are printed but tolerated, matching how
+          # much of PSScriptAnalyzer's default rule set is stylistic.
+          $found = Invoke-ScriptAnalyzer -Path ./install.ps1 -Severity Error,Warning
+          $found | Format-Table -AutoSize | Out-String | Write-Host
+          if ($found | Where-Object { $_.Severity -eq 'Error' }) {
+            Write-Host "::error::PSScriptAnalyzer reported errors in install.ps1"
+            exit 1
+          }
+      - name: Install s9n from this checkout's install.ps1
+        shell: pwsh
+        run: ./install.ps1
+      - name: The installed exe runs
+        shell: pwsh
+        run: |
+          & "$env:LOCALAPPDATA\Programs\s9n\current\s9n.exe" --version
+
   # One stable check name for branch protection to require.
   #
   # The `formula` job names are matrix-derived — `formula (macos-14, kemory)`,
@@ -55,7 +97,7 @@ jobs:
     # `always()` is required: without it a failed dependency SKIPS this job, and
     # branch protection counts a skipped required check as satisfied.
     if: always()
-    needs: [shellcheck, formula]
+    needs: [shellcheck, formula, installer-posix, installer-windows]
     runs-on: ubuntu-latest
     steps:
       - name: Fail unless every job succeeded
