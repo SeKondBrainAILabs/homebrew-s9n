@@ -11,6 +11,25 @@ SeKondBrain command-line tools. Learn more at
 
 Both sign you in through the browser; there is no key to paste.
 
+## Supported platforms
+
+| Platform | `kemory` | `s9n` |
+| --- | --- | --- |
+| macOS arm64 | Homebrew, direct download | Homebrew, curl, direct download |
+| macOS x86_64 | Homebrew, direct download | Homebrew, curl, direct download |
+| Linux x86_64 / arm64 | Homebrew, direct download | Homebrew, curl, direct download |
+| Windows x64 | direct download | PowerShell installer, direct download |
+
+Homebrew runs on Linux as well as macOS, and both formulae carry Linux builds —
+`brew` is not a macOS-only route. Two build constraints worth knowing:
+
+- `kemory` ships **separate per-arch macOS binaries**, not a universal2 one. Its
+  `pydantic-core` dependency publishes single-arch wheels, so there is no fat
+  binary to build. `s9n` does ship universal2.
+- The **Intel macOS** builds are produced on GitHub's `macos-15-intel` runner,
+  which GitHub retires in **August 2027**. There is no x86_64 macOS image after
+  that.
+
 ## kemory
 
 **Homebrew (macOS / Linux)**
@@ -51,15 +70,70 @@ curl -fsSL https://install.sekondbrain.ai | sh
 irm https://raw.githubusercontent.com/SeKondBrainAILabs/homebrew-s9n/refs/heads/main/install.ps1 | iex
 ```
 
-(Or download `s9n-windows-x64.zip` from the
-[latest release](https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/latest),
-unzip it, and put the folder on your PATH.)
+Or download `s9n-windows-x64.zip` by hand from the
+[releases](https://github.com/SeKondBrainAILabs/homebrew-s9n/releases) — pick the
+newest tag shaped `vX.Y.Z`. Do **not** use the "Latest" release badge: this repo
+publishes both products into one release stream, so "Latest" is usually a
+`cli-vX.Y.Z` kemory release, which carries no `s9n` asset at all.
 
 ```sh
 s9n login        # sign in via the browser
 s9n install      # register the MCP server in Claude Code
 # then open Claude Code and run /mcp — it shows connected, no key needed
 ```
+
+## Upgrading
+
+| Installed with | Upgrade with |
+| --- | --- |
+| Homebrew | `brew upgrade kemory` / `brew upgrade s9n` |
+| `install.sh` (curl) | re-run the same curl command |
+| `install.ps1` | re-run the same `irm … \| iex` command |
+| direct download | download the new archive and replace the folder |
+
+`kemory` can also update itself: `kemory upgrade` (`kemory doctor` reports
+whether you are behind).
+
+## Pinning a version
+
+Both install scripts take a version override, which is also how you roll back:
+
+```sh
+S9N_VERSION=v0.1.3 curl -fsSL https://install.sekondbrain.ai | sh
+```
+
+```powershell
+$env:S9N_VERSION = "v0.1.3"; irm https://raw.githubusercontent.com/SeKondBrainAILabs/homebrew-s9n/refs/heads/main/install.ps1 | iex
+```
+
+For Homebrew, install from a pinned formula revision rather than pinning here.
+
+## Uninstalling
+
+| Installed with | Remove with |
+| --- | --- |
+| Homebrew | `brew uninstall kemory` / `brew uninstall s9n` |
+| `install.sh` (curl) | `rm -rf ~/.s9n/lib ~/.local/bin/s9n` |
+| `install.ps1` | delete `%LOCALAPPDATA%\Programs\s9n` and remove it from your user PATH |
+
+Neither CLI writes outside those paths, but both store credentials separately —
+`kemory logout` / `s9n logout` first if you want the machine signed out.
+
+## Verifying a manual download
+
+Every release asset ships a `.sha256` sidecar; check it before running the
+binary. See [SECURITY.md](SECURITY.md) for the exact commands.
+
+The published binaries are **not yet code-signed or notarized**. Homebrew and
+the install scripts handle this for you (the scripts clear the quarantine
+attribute), but a macOS binary you download and unpack by hand is quarantined by
+Gatekeeper and refuses to launch. Clear it yourself:
+
+```sh
+xattr -dr com.apple.quarantine ~/Downloads/kemory-macos-arm64
+```
+
+On Windows, SmartScreen will warn about the unsigned `.exe` on first run.
 
 ## How updates work
 
