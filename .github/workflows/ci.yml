@@ -28,7 +28,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/setup-homebrew@main
       - name: Lint formula style (informational)
         continue-on-error: true
         run: brew style Formula/${{ matrix.formula }}.rb
