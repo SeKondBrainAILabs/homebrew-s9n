@@ -15,10 +15,10 @@ Both sign you in through the browser; there is no key to paste.
 
 | Platform | `kemory` | `s9n` |
 | --- | --- | --- |
-| macOS arm64 | Homebrew, direct download | Homebrew, curl, direct download |
-| macOS x86_64 | Homebrew, direct download | Homebrew, curl, direct download |
-| Linux x86_64 / arm64 | Homebrew, direct download | Homebrew, curl, direct download |
-| Windows x64 | direct download | PowerShell installer, direct download |
+| macOS arm64 | Homebrew, curl, direct download | Homebrew, curl, direct download |
+| macOS x86_64 | Homebrew, curl, direct download | Homebrew, curl, direct download |
+| Linux x86_64 / arm64 | Homebrew, curl, direct download | Homebrew, curl, direct download |
+| Windows x64 | PowerShell installer, direct download | PowerShell installer, direct download |
 
 Homebrew runs on Linux as well as macOS, and both formulae carry Linux builds —
 `brew` is not a macOS-only route. Two build constraints worth knowing:
@@ -38,9 +38,22 @@ Homebrew runs on Linux as well as macOS, and both formulae carry Linux builds �
 brew install sekondbrainailabs/s9n/kemory
 ```
 
-**Windows** — download `kemory-windows-x64.zip` from the
-[releases](https://github.com/SeKondBrainAILabs/homebrew-s9n/releases), unzip
-it, and put the folder on your PATH.
+**curl (macOS / Linux)** — no Homebrew needed, which is also the route to use
+in CI and containers:
+
+```sh
+curl -fsSL https://install.sekondbrain.ai/kemory | sh
+```
+
+**Windows (PowerShell)**
+
+```powershell
+irm https://raw.githubusercontent.com/SeKondBrainAILabs/homebrew-s9n/refs/heads/main/install-kemory.ps1 | iex
+```
+
+Or download `kemory-windows-x64.zip` by hand from the
+[releases](https://github.com/SeKondBrainAILabs/homebrew-s9n/releases) — pick the
+newest tag shaped `cli-vX.Y.Z` — unzip it, and put the folder on your PATH.
 
 ```sh
 kemory login     # sign in via the browser
@@ -87,8 +100,8 @@ s9n install      # register the MCP server in Claude Code
 | Installed with | Upgrade with |
 | --- | --- |
 | Homebrew | `brew upgrade kemory` / `brew upgrade s9n` |
-| `install.sh` (curl) | re-run the same curl command |
-| `install.ps1` | re-run the same `irm … \| iex` command |
+| curl (`install.sh` / `install-kemory.sh`) | re-run the same curl command |
+| PowerShell (`install.ps1` / `install-kemory.ps1`) | re-run the same `irm … \| iex` command |
 | direct download | download the new archive and replace the folder |
 
 `kemory` can also update itself: `kemory upgrade` (`kemory doctor` reports
@@ -96,7 +109,7 @@ whether you are behind).
 
 ## Pinning a version
 
-Both install scripts take a version override, which is also how you roll back:
+The install scripts take a version override, which is also how you roll back:
 
 ```sh
 S9N_VERSION=v0.1.3 curl -fsSL https://install.sekondbrain.ai | sh
@@ -106,6 +119,12 @@ S9N_VERSION=v0.1.3 curl -fsSL https://install.sekondbrain.ai | sh
 $env:S9N_VERSION = "v0.1.3"; irm https://raw.githubusercontent.com/SeKondBrainAILabs/homebrew-s9n/refs/heads/main/install.ps1 | iex
 ```
 
+`kemory` uses `KEMORY_VERSION` and its tags carry the `cli-` prefix:
+
+```sh
+KEMORY_VERSION=cli-v0.6.8 curl -fsSL https://install.sekondbrain.ai/kemory | sh
+```
+
 For Homebrew, install from a pinned formula revision rather than pinning here.
 
 ## Uninstalling
@@ -113,8 +132,8 @@ For Homebrew, install from a pinned formula revision rather than pinning here.
 | Installed with | Remove with |
 | --- | --- |
 | Homebrew | `brew uninstall kemory` / `brew uninstall s9n` |
-| `install.sh` (curl) | `rm -rf ~/.s9n/lib ~/.local/bin/s9n` |
-| `install.ps1` | delete `%LOCALAPPDATA%\Programs\s9n` and remove it from your user PATH |
+| curl | `rm -rf ~/.s9n/lib ~/.local/bin/s9n` (kemory: `~/.kemory/lib`, `~/.local/bin/kemory`) |
+| PowerShell | delete `%LOCALAPPDATA%\Programs\s9n` (or `…\kemory`) and remove it from your user PATH |
 
 Neither CLI writes outside those paths, but both store credentials separately —
 `kemory logout` / `s9n logout` first if you want the machine signed out.
