@@ -10,6 +10,8 @@
 # Env overrides:
 #   S9N_VERSION   pin a version (e.g. v0.2.0); default: latest release
 #   S9N_BIN_DIR   where to symlink the launcher (default: ~/.local/bin)
+#   GITHUB_TOKEN  optional; only used to raise the GitHub API rate limit when
+#                 resolving the latest version. Never sent to the download.
 set -eu
 
 REPO="SeKondBrainAILabs/homebrew-s9n"
@@ -52,10 +54,11 @@ main() {
   version="${S9N_VERSION:-}"
   if [ -z "$version" ]; then
     api="https://api.github.com/repos/$REPO/releases?per_page=100"
-    if have curl;   then releases=$(curl -fsSL "$api")
-    elif have wget; then releases=$(wget -qO- "$api")
-    else err "need curl or wget."
-    fi
+    have curl || have wget || err "need curl or wget."
+    releases=$(api_get "$api") || err "could not reach the GitHub API.
+    A 403 here is the unauthenticated rate limit — 60 requests/hour per IP,
+    which CI runners and anyone behind a shared NAT exhaust routinely. Either
+    set GITHUB_TOKEN, or skip the lookup entirely by pinning S9N_VERSION."
     version=$(printf '%s' "$releases" \
       | sed -n 's/.*"tag_name" *: *"\([^"]*\)".*/\1/p' \
       | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
@@ -119,6 +122,23 @@ main() {
 
 fetch() {
   if have curl; then curl -fsSL "$1" -o "$2"; else wget -qO "$2" "$1"; fi
+}
+
+# Only ever used for api.github.com. The token deliberately does not reach
+# fetch(): release downloads redirect to a separate asset host, and an
+# Authorization header follows the redirect.
+api_get() {
+  if have curl; then
+    if [ -n "${GITHUB_TOKEN:-}" ]
+      then curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" "$1"
+      else curl -fsSL "$1"
+    fi
+  else
+    if [ -n "${GITHUB_TOKEN:-}" ]
+      then wget -qO- --header="Authorization: Bearer $GITHUB_TOKEN" "$1"
+      else wget -qO- "$1"
+    fi
+  fi
 }
 
 # Everything above is a definition; this is the only line that acts. The script

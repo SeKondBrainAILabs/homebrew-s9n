@@ -8,6 +8,9 @@
 #
 # Env overrides:
 #   $env:S9N_VERSION   pin a version (e.g. v0.2.0); default: latest release
+#   $env:GITHUB_TOKEN  optional; only used to raise the GitHub API rate limit
+#                      when resolving the latest version. Never sent to the
+#                      download, which redirects to a separate asset host.
 
 $ErrorActionPreference = "Stop"
 $Repo = "SeKondBrainAILabs/homebrew-s9n"
@@ -21,7 +24,13 @@ $Archive = "s9n-$Target.zip"
 # is actually an s9n release. The exact-match pattern also skips prereleases.
 $version = $env:S9N_VERSION
 if (-not $version) {
-  $rels = Invoke-RestMethod -UseBasicParsing "https://api.github.com/repos/$Repo/releases?per_page=100"
+  $headers = @{}
+  if ($env:GITHUB_TOKEN) { $headers["Authorization"] = "Bearer $env:GITHUB_TOKEN" }
+  try {
+    $rels = Invoke-RestMethod -UseBasicParsing -Headers $headers "https://api.github.com/repos/$Repo/releases?per_page=100"
+  } catch {
+    throw "Could not reach the GitHub API. A 403 here is the unauthenticated rate limit (60 requests/hour per IP); set `$env:GITHUB_TOKEN, or pin `$env:S9N_VERSION to skip the lookup. ($_)"
+  }
   $version = ($rels | Where-Object { $_.tag_name -match '^v\d+\.\d+\.\d+$' } | Select-Object -First 1).tag_name
 }
 if (-not $version) { throw "Could not find an s9n release (its tags look like v0.1.3). Set `$env:S9N_VERSION to pin one." }
@@ -36,13 +45,27 @@ try {
   $zip = Join-Path $tmp $Archive
   Invoke-WebRequest -UseBasicParsing "$base/$Archive" -OutFile $zip
 
+  # Fetching the sidecar and comparing against it are deliberately separate. A
+  # single try/catch around both would let a broadened catch turn a genuine
+  # checksum MISMATCH into "skipping verification" — a missing sidecar is
+  # tolerable, a wrong hash is not.
+  $expected = $null
   try {
-    $expected = (Invoke-WebRequest -UseBasicParsing "$base/$Archive.sha256").Content.Trim()
+    $body = (Invoke-WebRequest -UseBasicParsing "$base/$Archive.sha256").Content
+    # GitHub serves the sidecar as application/octet-stream, so PowerShell 7
+    # hands back a [byte[]] while Windows PowerShell 5.1 hands back a string.
+    # Calling .Trim() on the byte array threw InvalidOperation and aborted the
+    # install outright, because $ErrorActionPreference is Stop and the old catch
+    # only caught WebException.
+    if ($body -is [byte[]]) { $body = [System.Text.Encoding]::UTF8.GetString($body) }
+    $expected = $body.Trim().Split()[0].ToLower()
+  } catch {
+    Write-Host "  (no checksum sidecar; skipping verification)"
+  }
+  if ($expected) {
     $actual = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
     if ($actual -ne $expected) { throw "Checksum mismatch (expected $expected, got $actual)" }
     Write-Host "  checksum ok"
-  } catch [System.Net.WebException] {
-    Write-Host "  (no checksum sidecar; skipping verification)"
   }
 
   # --- install ---------------------------------------------------------------

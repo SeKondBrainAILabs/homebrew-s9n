@@ -58,6 +58,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install s9n from this checkout's install.sh
+        # Without a token the script's version lookup hits the unauthenticated
+        # GitHub API limit (60/hour per IP) and curl exits 56 on the 403. The
+        # macOS runners share egress addresses and hit it routinely.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: sh ./install.sh
       - name: The installed launcher runs
         run: |
@@ -81,6 +86,8 @@ jobs:
           }
       - name: Install s9n from this checkout's install.ps1
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./install.ps1
       - name: The installed exe runs
         shell: pwsh
