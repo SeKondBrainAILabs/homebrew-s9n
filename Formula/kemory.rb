@@ -2,7 +2,7 @@
 class Kemory < Formula
   desc "Persistent memory CLI for AI agents — browser sign-in, MCP bridge"
   homepage "https://github.com/SeKondBrainAILabs/kemory"
-  version "0.6.8"
+  version "0.6.9"
   license "MIT"
 
   # Separate per-arch archives (no universal2 — see the build matrix).
@@ -10,23 +10,23 @@ class Kemory < Formula
   # retires in August 2027; see the matrix comment before removing.
   on_macos do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.8/kemory-macos-arm64.tar.gz"
-      sha256 "4dc28cd0551da7a9959b8e21f8e586485b7f30181cb67a541558d933c4c85637"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.9/kemory-macos-arm64.tar.gz"
+      sha256 "5a1ef9b5273b1a4e0a60d0bfb60566fc09c487fa7ea442bc54a11af7309540f0"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.8/kemory-macos-x64.tar.gz"
-      sha256 "b86c01e8c6226d0d6b08bebfa6d49b414979ae045dfbee9f1900eefb45a4ed0b"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.9/kemory-macos-x64.tar.gz"
+      sha256 "6393702bcd790f1db11bcc8fe5eca6fbdf751a56330646b6922ce8ea490762ba"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.8/kemory-linux-arm64.tar.gz"
-      sha256 "9a1f2f38aae267e3808db4ad58349c350a283655ba8c7a7f4a1d562c01edd751"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.9/kemory-linux-arm64.tar.gz"
+      sha256 "fc0454a86360752aef12cd32de17b4d72e94fe38e907cd7b87652a8dc2b46bd9"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.8/kemory-linux-x64.tar.gz"
-      sha256 "e741895aa3cba011e95e1fc66d77188d6023f10d37fa6b2f3c39a5d957844bfe"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.9/kemory-linux-x64.tar.gz"
+      sha256 "ba90d29dbbb00df58a6276fcd23a2255802f585234d3839a6bce3bca723899b2"
     end
   end
 
