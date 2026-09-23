@@ -2,7 +2,7 @@
 class Kemory < Formula
   desc "Persistent memory CLI for AI agents — browser sign-in, MCP bridge"
   homepage "https://github.com/SeKondBrainAILabs/kemory"
-  version "0.6.9"
+  version "0.6.10"
   license "MIT"
 
   # Separate per-arch archives (no universal2 — see the build matrix).
@@ -10,23 +10,23 @@ class Kemory < Formula
   # retires in August 2027; see the matrix comment before removing.
   on_macos do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.9/kemory-macos-arm64.tar.gz"
-      sha256 "5a1ef9b5273b1a4e0a60d0bfb60566fc09c487fa7ea442bc54a11af7309540f0"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.10/kemory-macos-arm64.tar.gz"
+      sha256 "240c893409332165b7a8873520162bf2b08f1f4deb9a3e2bfbdea05e92d22ea3"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.9/kemory-macos-x64.tar.gz"
-      sha256 "6393702bcd790f1db11bcc8fe5eca6fbdf751a56330646b6922ce8ea490762ba"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.10/kemory-macos-x64.tar.gz"
+      sha256 "23184bfb4cede7b5c3c173b93c3d8601cbee9a8cd47cacd6ddeabe2ca7c8f799"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.9/kemory-linux-arm64.tar.gz"
-      sha256 "fc0454a86360752aef12cd32de17b4d72e94fe38e907cd7b87652a8dc2b46bd9"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.10/kemory-linux-arm64.tar.gz"
+      sha256 "52bf1e2496249da731656045234da5f1781a9b23f4f6d2a334d00f3b59e8f238"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.9/kemory-linux-x64.tar.gz"
-      sha256 "ba90d29dbbb00df58a6276fcd23a2255802f585234d3839a6bce3bca723899b2"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.10/kemory-linux-x64.tar.gz"
+      sha256 "e6d331a5e8d40eb4285954913f59a6e9999c2be4d16a201e004049ba327a4abd"
     end
   end
 
