@@ -35,6 +35,7 @@ Homebrew runs on Linux as well as macOS, and both formulae carry Linux builds �
 **Homebrew (macOS / Linux)**
 
 ```sh
+brew trust --tap sekondbrainailabs/s9n   # once per machine, see below
 brew install sekondbrainailabs/s9n/kemory
 ```
 
@@ -68,6 +69,7 @@ Full command reference: [docs.sekondbrain.ai/kemory/cli](https://docs.sekondbrai
 **Homebrew (macOS / Linux)**
 
 ```sh
+brew trust --tap sekondbrainailabs/s9n   # once per machine, see below
 brew install sekondbrainailabs/s9n/s9n
 ```
 
@@ -94,6 +96,24 @@ s9n login        # sign in via the browser
 s9n install      # register the MCP server in Claude Code
 # then open Claude Code and run /mcp — it shows connected, no key needed
 ```
+
+## Trusting the tap
+
+Recent Homebrew refuses to load formulae from a tap it does not know:
+
+```
+Error: Refusing to load formula sekondbrainailabs/s9n/kemory from untrusted tap
+sekondbrainailabs/s9n.
+```
+
+That is Homebrew asking for consent before running a third party's install
+code, not a fault in the tap. `brew trust --tap sekondbrainailabs/s9n` answers
+it once per machine and covers both formulae here; the entry is recorded in
+`$XDG_CONFIG_HOME/homebrew/trust.json`, or `~/.homebrew/trust.json` when that
+variable is unset. Homebrew versions old enough not to ask have no `brew trust`
+command — skip the line if yours reports `Unknown command`.
+
+The curl and direct-download routes are unaffected: they never load a formula.
 
 ## Upgrading
 
