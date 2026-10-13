@@ -2,7 +2,7 @@
 class Kemory < Formula
   desc "Persistent memory CLI for AI agents — browser sign-in, MCP bridge"
   homepage "https://github.com/SeKondBrainAILabs/kemory"
-  version "0.6.11"
+  version "0.6.12"
   license "MIT"
 
   # Separate per-arch archives (no universal2 — see the build matrix).
@@ -10,23 +10,23 @@ class Kemory < Formula
   # retires in August 2027; see the matrix comment before removing.
   on_macos do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.11/kemory-macos-arm64.tar.gz"
-      sha256 "e9a745bb9c20793893476f9901ba6cafe1e4a3c6483551598346edc2a7098e4e"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.12/kemory-macos-arm64.tar.gz"
+      sha256 "044d8410ef1a9108a75f84af1e4929db3653e94b5965682488025d8c0c3ec56d"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.11/kemory-macos-x64.tar.gz"
-      sha256 "049558039b5d75d0381de4f8a838f3c9e07884707e76156a4147f71ab7077372"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.12/kemory-macos-x64.tar.gz"
+      sha256 "2741098b3844f249db623de099c7673a33c8dd37e4943bffb8ea3aa62e7312a6"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.11/kemory-linux-arm64.tar.gz"
-      sha256 "bb9f12425ddf44326d6547415ed3e5c43ffa6c6f040af9c49a47b32599788de8"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.12/kemory-linux-arm64.tar.gz"
+      sha256 "c5c4d4957e34d10f54029aec46953f2c492a893d0f3088810a1d3ec54930c68f"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.11/kemory-linux-x64.tar.gz"
-      sha256 "66760eac7de6e6580e177c530fdb07073a127d8c35bc15e2bb8d3a41f4e5fe0d"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.6.12/kemory-linux-x64.tar.gz"
+      sha256 "d672bc7126d4c2fd31baffef297520b0cce5d7a1e2dc5a4c4b4b64f44b387b98"
     end
   end
 
