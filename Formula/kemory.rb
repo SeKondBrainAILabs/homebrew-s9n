@@ -2,28 +2,28 @@
 class Kemory < Formula
   desc "Kemory CLI: connect MCP clients to your Kemory memory vault"
   homepage "https://github.com/SeKondBrainAILabs/kemory-cli"
-  version "0.18.5"
+  version "0.18.6"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.18.5/kemory-macos-arm64.tar.gz"
-      sha256 "0a2b2483880c9ba14f048c145e3cdf174e1216e099e0e2876b5a6c0ebe932e68"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.18.6/kemory-macos-arm64.tar.gz"
+      sha256 "7c8a90972f9c6e23b2ff1a0f75292e80e03d188cfe723991a85389b3bf544df0"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.18.5/kemory-macos-x64.tar.gz"
-      sha256 "74a62999408702a7eb733d039dfb11c64466630d3f1cdb9bfc7dafe58aab6c69"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.18.6/kemory-macos-x64.tar.gz"
+      sha256 "63e135d128082492fcebb990776fe6705e96cf6f5ae64b4cedab8dd2eb810a84"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.18.5/kemory-linux-arm64.tar.gz"
-      sha256 "ee5d30057d28cddb01bce6d7edd3289a51992223c33afa6b68b72ba0c7d0e12c"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.18.6/kemory-linux-arm64.tar.gz"
+      sha256 "2576a9f95c2489a0e8dfd23fe2cd2d4e8b0c359401b4cd064f49d898bcb6ea3a"
     end
     on_intel do
-      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.18.5/kemory-linux-x64.tar.gz"
-      sha256 "aaa40d1048a82b7a7fe264137fd343336df997f2d19d43a5f951b87f4d4164ed"
+      url "https://github.com/SeKondBrainAILabs/homebrew-s9n/releases/download/cli-v0.18.6/kemory-linux-x64.tar.gz"
+      sha256 "a1fcbf0d787a1e0d244c0ffa0d672ad1864e94ab38e6c6092ea24fbf5e0b8d1f"
     end
   end
 
@@ -40,6 +40,6 @@ class Kemory < Formula
   end
 
   test do
-    assert_match "version 0.18.5", shell_output("#{bin}/kemory --version")
+    assert_match "version 0.18.6", shell_output("#{bin}/kemory --version")
   end
 end
